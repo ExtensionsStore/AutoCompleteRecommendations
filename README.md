@@ -16,3 +16,8 @@ System -> Configuration -> Catalog -> Catalog -> Auto Complete Recommendations,
 configure the extension:
 
 <img src="md/configuration.png" />
+
+On the front end, after a search term has been added to the results database, 
+recommendations will start to appear for the search term:
+
+<img src="md/example.png" />
