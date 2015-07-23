@@ -1,0 +1,3 @@
+app/code/community/Aydus/AutoCompleteRecommendations                             app/code/community/Aydus/AutoCompleteRecommendations
+app/design/frontend/base/default/template/aydus/autocompleterecommendations      app/design/frontend/base/default/template/aydus/autocompleterecommendations
+app/etc/modules/Aydus_AutoCompleteRecommendations.xml                            app/etc/modules/Aydus_AutoCompleteRecommendations.xml

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * Aydus_AutoCompleteRecommendations module
+ *
+ * @category   Aydus
+ * @package    Aydus_AutoCompleteRecommendations
+ * @author     Aydus <davidt@aydus.com>
+ */
+-->
+<config>
+    <modules>
+        <Aydus_AutoCompleteRecommendations>
+             <active>true</active>
+             <codePool>community</codePool>
+        </Aydus_AutoCompleteRecommendations>
+    </modules>
+</config>

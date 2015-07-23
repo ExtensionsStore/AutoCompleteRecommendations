@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Aydus_AutoCompleteRecommendations module config
+ *
+ * @category   Aydus
+ * @package    Aydus_AutoCompleteRecommendations
+ * @author     Aydus <davidt@aydus.com>
+ */
+-->
+<config>
+    <modules>
+        <Aydus_AutoCompleteRecommendations>
+            <version>0.5.0</version>
+        </Aydus_AutoCompleteRecommendations>
+    </modules>
+    <phpunit>
+        <suite>
+            <modules>
+                <Aydus_AutoCompleteRecommendations />
+            </modules>
+        </suite>
+    </phpunit>
+    <frontend>
+    	<events>
+    		<core_block_abstract_to_html_after>
+                <observers>
+                    <aydus_autocompleterecommendations_toprecommendations>
+                        <class>aydus_autocompleterecommendations/observer</class>
+                        <method>appendTopRecommendation</method>
+                    </aydus_autocompleterecommendations_toprecommendations>
+                </observers>
+    		</core_block_abstract_to_html_after>
+    	</events>
+    </frontend>    
+    <global>
+        <blocks>
+            <aydus_autocompleterecommendations>
+                <class>Aydus_AutoCompleteRecommendations_Block</class>
+            </aydus_autocompleterecommendations>
+        </blocks>
+        <helpers>
+            <aydus_autocompleterecommendations>
+                <class>Aydus_AutoCompleteRecommendations_Helper</class>
+            </aydus_autocompleterecommendations>
+            <autocompleterecommendations>
+                <class>Aydus_AutoCompleteRecommendations_Helper</class>
+            </autocompleterecommendations>
+        </helpers>
+        <models>
+            <aydus_autocompleterecommendations>
+                <class>Aydus_AutoCompleteRecommendations_Model</class>
+            </aydus_autocompleterecommendations>
+        </models>
+    </global> 
+    <default>
+    	<catalog>
+    		<aydus_autocompleterecommendations>
+	    		<enabled>1</enabled>
+	    		<label_product_recommendations>Recommended Products</label_product_recommendations>
+    			<max_product_recommendations>5</max_product_recommendations>
+    			<recommendation_base>sold</recommendation_base>
+    		</aydus_autocompleterecommendations>
+    	</catalog>
+    </default> 
+</config>

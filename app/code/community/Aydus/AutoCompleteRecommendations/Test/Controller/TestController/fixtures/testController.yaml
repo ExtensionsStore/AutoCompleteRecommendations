@@ -1,0 +1,24 @@
+eav:
+  catalog_product:
+    - entity_id: 1 # main product
+      attribute_set_id: 4
+      type_id: simple
+      sku: test-product
+      name: Test Product
+      short_description: Test product
+      description: Test product
+      url_key: test-product
+      website_ids: 
+        - 1
+      category_ids: 
+        - 2
+      price: 10.00
+      tax_class_id: 2
+      status: 1
+      visibility: 4
+tables:
+  catalogsearch/search_query:
+    - query_id: 1
+      query_text: test
+      num_results: 1
+      store_id: 1
