@@ -68,23 +68,38 @@ class Aydus_AutoCompleteRecommendations_Model_Observer
         $uls = $dom->getElementsByTagName('ul');
         $ul = $uls->item(0);
         
-        if ($this->_maxProductRecommendations > 0){
+        $query = Mage::helper('autocompleterecommendations')->getQuery();
+        
+        $cacheKey = $query->getId().$query->getQueryText().$query->getNumResults();
+        
+        $cache = Mage::app()->getCache();
+        $productRecommendationsHtml = $cache->load($cacheKey);
+        $productRecommendationsHtml = unserialize($productRecommendationsHtml);
+        $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
+        
+        if (!$productRecommendationsHtml){
             
             $productRecommendations = Mage::getModel('aydus_autocompleterecommendations/recommendation')->getRecommendations($this->_maxProductRecommendations);
             
             if ($productRecommendations && $productRecommendations->count()>0){
-                
-                $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
+            
                 $productRecommendationsBlock->setType('product');
                 $productRecommendationsBlock->setRecommendations($productRecommendations);
+            
+                $productRecommendationsHtml = $productRecommendationsBlock->toHtml();
                 
-                $productRecommendationsDom = $productRecommendationsBlock->getRecommendationsDom();
-                
-                $productRecommendationsDom = $dom->importNode($productRecommendationsDom, true);                
-                $ul->appendChild($productRecommendationsDom);
+                $cache->save(serialize($productRecommendationsHtml), $cacheKey, array('BLOCK_HTML'), 604800);
                 
             }
             
+        }
+        
+        if ($productRecommendationsHtml){
+            
+            $productRecommendationsDom = $productRecommendationsBlock->getRecommendationsDom($productRecommendationsHtml);
+            
+            $productRecommendationsDom = $dom->importNode($productRecommendationsDom, true);
+            $ul->appendChild($productRecommendationsDom);
         }
                 
         $dom->removeChild($dom->doctype);

@@ -37,9 +37,12 @@ class Aydus_AutoCompleteRecommendations_Block_Recommendation extends Mage_Core_B
         return $headerLabel;
     }
     
-    public function getRecommendationsDom()
+    public function getRecommendationsDom($html = null)
     {
-        $html = $this->toHtml();
+        if (!$html){
+            
+            $html = $this->toHtml();
+        }
         
         $dom = new DOMDocument('1.0', 'utf8');
         $dom->loadXml('<root/>');
