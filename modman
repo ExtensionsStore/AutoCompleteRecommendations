@@ -1,3 +1,4 @@
-app/code/community/Aydus/AutoCompleteRecommendations                             app/code/community/Aydus/AutoCompleteRecommendations
-app/design/frontend/base/default/template/aydus/autocompleterecommendations      app/design/frontend/base/default/template/aydus/autocompleterecommendations
-app/etc/modules/Aydus_AutoCompleteRecommendations.xml                            app/etc/modules/Aydus_AutoCompleteRecommendations.xml
+app/code/community/Aydus/AutoCompleteRecommendations                               app/code/community/Aydus/AutoCompleteRecommendations
+app/design/adminhtml/default/default/layout/aydus/autocompleterecommendations.xml  app/design/adminhtml/default/default/layout/aydus/autocompleterecommendations.xml
+app/design/frontend/base/default/template/aydus/autocompleterecommendations        app/design/frontend/base/default/template/aydus/autocompleterecommendations
+app/etc/modules/Aydus_AutoCompleteRecommendations.xml                              app/etc/modules/Aydus_AutoCompleteRecommendations.xml

@@ -9,46 +9,32 @@
  */
 
 class Aydus_AutoCompleteRecommendations_Model_Observer 
-{
-    protected $_maxProductRecommendations;
-    
+{    
     /**
-     * @see core_block_abstract_to_html_after
+     * @see controller_action_postdispatch_catalogsearch_ajax_suggest
      * @param Varien_Event_Observer $observer
      */
     public function appendTopRecommendation($observer)
     {
         $storeId = Mage::app()->getStore()->getId();
+        $enabled = Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/enabled', $storeId);
         
-        $query = Mage::helper('autocompleterecommendations')->getQuery();
-        
-        if ($query->getId() && $query->getNumResults()){
+        if ($enabled){
             
-            $enabled = Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/enabled', $storeId);
-            $this->_maxProductRecommendations = (int)Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/max_product_recommendations', $storeId);
-            
-            if ($enabled && $this->_maxProductRecommendations > 0){
-            
-                $block = $observer->getBlock();
-            
-                if (get_class($block) == 'Mage_CatalogSearch_Block_Autocomplete') {
-            
-                    $transport = $observer->getTransport();
-                    $html = $transport->getHtml();
-            
-                    if ($html){
-                        $html = $this->_appendTopRecommendations($html);
-                    }
-            
-                    $transport->setHtml($html);
-            
-                }
+            $event = $observer->getEvent();
+            $controller = $event->getControllerAction();
+            $response = $controller->getResponse();
+            $html = $response->getBody();
+                    
+            if ($html){
+                $html = $this->_appendTopRecommendations($html);
             }
+        
+            $response->setBody($html);
             
         }
         
         return $observer;
-        
     }
     
     /**
@@ -59,56 +45,109 @@ class Aydus_AutoCompleteRecommendations_Model_Observer
      */
     protected function _appendTopRecommendations($html)
     {
-        $layout = Mage::getSingleton('core/layout');
-        
-        $dom = new DOMDocument('1.0', 'utf8');
-        
-        $dom->loadHTML($html);
-        
-        $uls = $dom->getElementsByTagName('ul');
-        $ul = $uls->item(0);
-        
-        $query = Mage::helper('autocompleterecommendations')->getQuery();
-        
-        $cacheKey = $query->getId().$query->getQueryText().$query->getNumResults();
-        
-        $cache = Mage::app()->getCache();
-        $productRecommendationsHtml = $cache->load($cacheKey);
-        $productRecommendationsHtml = unserialize($productRecommendationsHtml);
-        $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
-        
-        if (!$productRecommendationsHtml){
-            
-            $productRecommendations = Mage::getModel('aydus_autocompleterecommendations/recommendation')->getRecommendations($this->_maxProductRecommendations);
-            
-            if ($productRecommendations && $productRecommendations->count()>0){
-            
-                $productRecommendationsBlock->setType('product');
-                $productRecommendationsBlock->setRecommendations($productRecommendations);
-            
-                $productRecommendationsHtml = $productRecommendationsBlock->toHtml();
-                
-                $cache->save(serialize($productRecommendationsHtml), $cacheKey, array('BLOCK_HTML'), 604800);
-                
-            }
-            
-        }
+        $recommendationsModel = Mage::getModel('aydus_autocompleterecommendations/recommendation');
+        $productRecommendationsHtml = $recommendationsModel->getProductRecommendationsHtml();
         
         if ($productRecommendationsHtml){
             
-            $productRecommendationsDom = $productRecommendationsBlock->getRecommendationsDom($productRecommendationsHtml);
+            $dom = new DOMDocument('1.0', 'utf8');
             
+            $dom->loadHTML($html);
+            
+            $uls = $dom->getElementsByTagName('ul');
+            $ul = $uls->item(0);
+            
+            $productRecommendationsDom = $recommendationsModel->getRecommendationsDom($productRecommendationsHtml);
+        
             $productRecommendationsDom = $dom->importNode($productRecommendationsDom, true);
             $ul->appendChild($productRecommendationsDom);
+            
+            $dom->removeChild($dom->doctype);
+            $dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
+            
+            $html = $dom->saveHTML();
         }
-                
-        $dom->removeChild($dom->doctype);
-        $dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
-                
-        $html = $dom->saveHTML();
         
         return $html;
     }
     
+    /**
+     * @see catalogsearch_query_save_after
+     * @param Varien_Event_Observer $observer
+     */    
+    public function saveRecommendations($observer)
+    {
+        try {
+            
+            $query = $observer->getCatalogsearchQuery();
+            
+            $request = Mage::app()->getRequest();
+            
+            $selectedProducts = $request->getParam('grid_selected_products');
+            
+            $selectedProducts = explode('&', $selectedProducts);
+            
+            if (is_array($selectedProducts) && count($selectedProducts)>0){
+            
+                $recommendationsData = array();
+            
+                foreach ($selectedProducts as $selectedProduct){
+            
+                    $selectedProduct = explode('=', $selectedProduct);
+            
+                    if (is_array($selectedProduct) && count($selectedProduct)>1){
+            
+                        $productId = $selectedProduct[0];
+                        $params = urldecode($selectedProduct[1]);
+            
+                        $params = @base64_decode($params, true);
+            
+                        $params = explode('=',$params);
+            
+                        if (is_array($params) && count($params)>0){
+            
+                            $position = (int)$params[1];
+            
+                            $recommendationsData[] = array(
+                                    'query_id' => $query->getId(),
+                                    'product_id' => $productId,
+                                    'position'=>$position,
+                                    'date_recommended' => date('Y-m-d H:i:s')
+                            );
+            
+                        }
+            
+                    }
+            
+                }
+            
+                if (is_array($recommendationsData) && count($recommendationsData)>0){
+            
+                    $collection = Mage::getModel('aydus_autocompleterecommendations/recommendation')->getCollection();
+                    $collection->addFieldToFilter('query_id',$query->getId());
+            
+                    foreach ($collection as $recommendation){
+                        $recommendation->delete();
+                    }
+            
+                    foreach ($recommendationsData as $data){
+            
+                        $recommendation = Mage::getModel('aydus_autocompleterecommendations/recommendation');
+            
+                        $recommendation->setData($data);
+            
+                        $recommendation->save();
+                    }
+            
+                }
+                
+            }
+                        
+        } catch(Exception $e){
+            
+            Mage::log($e->getMessage, null, 'aydus_autocompleterecommendations.log');
+        }
+        
+    }
     
 }

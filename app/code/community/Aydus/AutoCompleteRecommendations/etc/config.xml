@@ -11,7 +11,7 @@
 <config>
     <modules>
         <Aydus_AutoCompleteRecommendations>
-            <version>0.5.0</version>
+            <version>0.9.0</version>
         </Aydus_AutoCompleteRecommendations>
     </modules>
     <phpunit>
@@ -21,23 +21,68 @@
             </modules>
         </suite>
     </phpunit>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <recommendation before="Mage_Adminhtml">Aydus_AutoCompleteRecommendations_Adminhtml</recommendation>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>    
+    <adminhtml>
+        <layout>
+            <updates>
+                <aydus_autocompleterecommendations>
+                    <file>aydus/autocompleterecommendations.xml</file>
+                </aydus_autocompleterecommendations>
+            </updates>
+        </layout>
+    	<events>
+    		<catalogsearch_query_save_after>
+                <observers>
+                    <aydus_autocompleterecommendations>
+                        <class>aydus_autocompleterecommendations/observer</class>
+                        <method>saveRecommendations</method>
+                    </aydus_autocompleterecommendations>
+                </observers>    		
+    		</catalogsearch_query_save_after>
+    	</events>
+    </adminhtml>    
     <frontend>
     	<events>
-    		<core_block_abstract_to_html_after>
+    		<controller_action_postdispatch_catalogsearch_ajax_suggest>
                 <observers>
-                    <aydus_autocompleterecommendations_toprecommendations>
+                    <aydus_autocompleterecommendations>
                         <class>aydus_autocompleterecommendations/observer</class>
                         <method>appendTopRecommendation</method>
-                    </aydus_autocompleterecommendations_toprecommendations>
+                    </aydus_autocompleterecommendations>
                 </observers>
-    		</core_block_abstract_to_html_after>
+    		</controller_action_postdispatch_catalogsearch_ajax_suggest>
     	</events>
-    </frontend>    
+    </frontend>
+    <crontab>
+        <jobs>
+            <aydus_autocompleterecommendations_generaterecommendations>
+                <schedule>
+                    <cron_expr>0 1 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>aydus_autocompleterecommendations/cron::generateRecommendations</model>
+                </run>
+            </aydus_autocompleterecommendations_generaterecommendations>
+        </jobs>
+    </crontab>
     <global>
         <blocks>
             <aydus_autocompleterecommendations>
                 <class>Aydus_AutoCompleteRecommendations_Block</class>
             </aydus_autocompleterecommendations>
+            <autocompleterecommendations>
+                <class>Aydus_AutoCompleteRecommendations_Block</class>
+            </autocompleterecommendations>
         </blocks>
         <helpers>
             <aydus_autocompleterecommendations>
@@ -50,8 +95,27 @@
         <models>
             <aydus_autocompleterecommendations>
                 <class>Aydus_AutoCompleteRecommendations_Model</class>
+                <resourceModel>aydus_autocompleterecommendations_resource</resourceModel>
             </aydus_autocompleterecommendations>
+            <aydus_autocompleterecommendations_resource>
+                <class>Aydus_AutoCompleteRecommendations_Model_Resource</class>
+                <entities>
+                    <recommendation>
+                        <table>aydus_autocompleterecommendations_recommendation</table>
+                    </recommendation>
+                </entities>
+            </aydus_autocompleterecommendations_resource>            
         </models>
+        <resources>
+            <aydus_autocompleterecommendations_setup>
+                <setup>
+                    <module>Aydus_AutoCompleteRecommendations</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </aydus_autocompleterecommendations_setup>        
+        </resources>  
     </global> 
     <default>
     	<catalog>
