@@ -10,7 +10,7 @@
 
 $this->startSetup();
 
-$this->run("CREATE TABLE IF NOT EXIST `{$this->getTable('aydus_autocompleterecommendations_recommendation')}` (
+$this->run("CREATE TABLE IF NOT EXISTS `{$this->getTable('aydus_autocompleterecommendations_recommendation')}` (
   `recommendation_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `query_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
