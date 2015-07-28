@@ -46,7 +46,8 @@ class Aydus_AutoCompleteRecommendations_Model_Observer
     protected function _appendTopRecommendations($html)
     {
         $recommendationsModel = Mage::getModel('aydus_autocompleterecommendations/recommendation');
-        $productRecommendationsHtml = $recommendationsModel->getProductRecommendationsHtml();
+        $query = Mage::helper('catalogsearch')->getQuery();
+        $productRecommendationsHtml = $recommendationsModel->getProductRecommendationsHtml($query);
         
         if ($productRecommendationsHtml){
             

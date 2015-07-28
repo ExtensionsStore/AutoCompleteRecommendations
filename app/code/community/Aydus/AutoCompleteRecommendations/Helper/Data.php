@@ -33,16 +33,7 @@ class Aydus_AutoCompleteRecommendations_Helper_Data extends Mage_Core_Helper_Abs
     public function getQuery()
     {
         $query = Mage::helper('catalogsearch')->getQuery();
-    
-        if (!$query->getId() || !$query->getNumResults()){
-    
-            $suggestCollection = $query->getSuggestCollection();
-    
-            if ($suggestCollection->getSize()>0){
-                $query = $suggestCollection->getFirstItem();
-            }
-        }
-    
+        
         return $query;
     }    
     

@@ -20,6 +20,8 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
         $this->_init('aydus_autocompleterecommendations/recommendation');
     }
     
+    protected $_storeId;
+    
     //const RECOMMENDATION_MOST_DOWNLOADS = 'downloads';
     const RECOMMENDATION_MOST_ORDERED = 'ordered';
     const RECOMMENDATION_MOST_SOLD = 'sold';
@@ -43,47 +45,26 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
      */
     public function getRecommendations($query = null)
     {
-        $storeId = Mage::app()->getStore()->getId();
+        $storeId = $query->getStoreId();
         
         if (!$query){
             
             $query = Mage::helper('autocompleterecommendations')->getQuery();
         }
         
-        if ($query->getId()){
+        if ($query->getQueryText()){
             
-            $productIds = (array)$this->_getSelectedRecommendations($query);
+            $productIds = ($query->getId()) ? $this->_getSelectedRecommendations($query) : array();
             
             $collection = Mage::getResourceModel('catalog/product_collection');
 
             if (!$productIds || count($productIds)==0){
                 
-                if (Mage::getStoreConfig('catalog/search/engine', $storeId) == 'enterprise_search/engine'){
-                
-                    $engine = Mage::helper('catalogsearch')->getEngine();
-                
-                    $resultCollection = $engine->getResultCollection();
-                    $resultCollection->addSearchFilter($query->getQueryText());
-                
-                    $entityIds = $resultCollection->load()->getAllIds();
-                
-                    $collection->addAttributeToFilter('entity_id', array('in' => $entityIds));
-                
-                } else {
-                
-                    $collection->getSelect()->joinInner(
-                            array('search_result' => $collection->getTable('catalogsearch/result')),
-                            $collection->getConnection()->quoteInto(
-                                    'search_result.product_id=e.entity_id AND search_result.query_id=?',
-                                    $query->getId()
-                            ),
-                            array('relevance' => 'relevance')
-                    );
-                
-                }
+
+                $collection = $this->_joinSearchResults($collection, $query);
                 $selectStr = (string)$collection->getSelect();
                 
-                $productIds = (array)$this->_getBaseRecommendations();
+                $productIds = (array)$this->_getBaseRecommendations($query);
                 
             } 
             
@@ -123,6 +104,41 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
             
     }
     
+    protected function _joinSearchResults($collection, $query)
+    {
+        $storeId = (int)$query->getStoreId();
+        
+        if (Mage::getStoreConfig('catalog/search/engine', $storeId) == 'enterprise_search/engine'){
+        
+            $engine = Mage::helper('catalogsearch')->getEngine();
+        
+            $resultCollection = $engine->getResultCollection();
+            $resultCollection->addSearchFilter($query->getQueryText());
+        
+            $entityIds = $resultCollection->load()->getAllIds();
+        
+            $collection->addAttributeToFilter('entity_id', array('in' => $entityIds));
+        
+        } else {
+            
+            $where = $collection->getConnection()->quoteInto('fulltext.store_id= ?', $storeId);
+            $where .= ' AND '.$collection->getConnection()->quoteInto('fulltext.data_index LIKE ?', "%{$query->getQueryText()}%");
+        
+            $collection->joinTable(
+                    array('fulltext' => $collection->getTable('catalogsearch/fulltext')),
+                    'product_id=entity_id',
+                    array('product_id' => 'product_id'),
+                    $where,
+                    'inner'
+            );
+                        
+            $select = (string)$collection->getSelect();
+            
+        }       
+
+        return $collection;
+    }
+    
     /**
      * Get recommendations for query
      * 
@@ -137,10 +153,10 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
         
         $productRecommendationsHtml = false;
         
-        if ($query->getId() && $query->getNumResults() > 0){
+        if ($query->getQueryText()){
             
-            $storeId = Mage::app()->getStore()->getId();
-            $cacheKey = $storeId.$query->getId().$query->getQueryText().$query->getNumResults();
+            $storeId = $query->getStoreId();
+            $cacheKey = $storeId.$query->getQueryText().$query->getNumResults();
             $cache = Mage::app()->getCache();
             $productRecommendationsHtml = $cache->load($cacheKey);
             $productRecommendationsHtml = unserialize($productRecommendationsHtml);
@@ -211,11 +227,11 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
      * @param Mage_CatalogSearch_Model_Query $query
      * @return array
      */
-    protected function _getBaseRecommendations()
+    protected function _getBaseRecommendations($query)
     {
         $productIds = array();
         
-        $storeId = Mage::app()->getStore()->getId();
+        $storeId = (int)$query->getStoreId();
         $recommendationBase = Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/recommendation_base', $storeId);
         $resourceModel = @$this->_recommendationBase[$recommendationBase]['resource_model'];
         $order = (array)@$this->_recommendationBase[$recommendationBase]['order'];
