@@ -75,7 +75,76 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[To date of recommendations (leave empty for current. Format is Y-m-d).]]></comment>
-                        </recommendation_to>                          
+                        </recommendation_to>  
+                        <cron translate="label comment">
+                            <label>Generate Recommendations Cron</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[If yes, cron will run at 1 a.m. generating recommendations for each search term.]]></comment>
+                        </cron>   
+                        <solr translate="label comment">
+                            <label>Solr</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[If yes and using Magento Community, fill out fields below. If yes and using Magento Enterprise, leave fields blank below and complete fields in Catalog Search tab above.]]></comment>
+                        </solr>                           
+                        <solr_server_hostname translate="label">
+                            <label>Solr Server Hostname</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>9</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_hostname>
+                        <solr_server_port translate="label">
+                            <label>Solr Server Port</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_port>
+                        <solr_server_username translate="label">
+                            <label>Solr Server Username</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_username>
+                        <solr_server_password translate="label">
+                            <label>Solr Server Password</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>12</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_password>
+                        <solr_server_timeout translate="label">
+                            <label>Solr Server Timeout</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>13</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_timeout>
+                        <solr_server_path translate="label comment">
+                            <label>Solr Server Path</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>Without starting and trailing slashes.</comment>
+                            <sort_order>14</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </solr_server_path>                                                                       
                     </fields>
                 </aydus_autocompleterecommendations>
             </groups>        

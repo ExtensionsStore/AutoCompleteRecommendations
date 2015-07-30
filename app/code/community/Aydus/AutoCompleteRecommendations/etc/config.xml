@@ -11,7 +11,7 @@
 <config>
     <modules>
         <Aydus_AutoCompleteRecommendations>
-            <version>0.9.0</version>
+            <version>0.9.5</version>
         </Aydus_AutoCompleteRecommendations>
     </modules>
     <phpunit>
@@ -124,6 +124,11 @@
 	    		<label_product_recommendations>Recommended Products</label_product_recommendations>
     			<max_product_recommendations>5</max_product_recommendations>
     			<recommendation_base>sold</recommendation_base>
+    			<cron>0</cron>
+    			<solr>0</solr>
+    			<solr_server_hostname>127.0.0.1</solr_server_hostname>
+    			<solr_server_port>8983</solr_server_port>
+    			<solr_server_path>solr</solr_server_path>
     		</aydus_autocompleterecommendations>
     	</catalog>
     </default> 

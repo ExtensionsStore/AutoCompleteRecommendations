@@ -40,10 +40,73 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
     }
     
     /**
+     * Get recommendations for query
+     *
+     * @param Mage_CatalogSearch_Model_Query $query
+     * @return string|boolean
+     */
+    public function getProductRecommendationsHtml($query = null)
+    {
+        if (!$query){
+            $query = Mage::helper('autocompleterecommendations')->getQuery();
+        }
+    
+        $productRecommendationsHtml = false;
+    
+        if ($query->getQueryText()){
+    
+            $storeId = $query->getStoreId();
+            $cacheKey = $storeId.$query->getQueryText().$query->getNumResults();
+            $cache = Mage::app()->getCache();
+            $productRecommendationsHtml = $cache->load($cacheKey);
+            $productRecommendationsHtml = unserialize($productRecommendationsHtml);
+    
+            if (!$productRecommendationsHtml){
+    
+                $productRecommendations = $this->_getRecommendations($query);
+    
+                if ($productRecommendations && $productRecommendations->getSize()>0){
+    
+                    $layout = Mage::getSingleton('core/layout');
+                    $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
+    
+                    $productRecommendationsBlock->setType('product');
+                    $productRecommendationsBlock->setRecommendations($productRecommendations);
+    
+                    $productRecommendationsHtml = $productRecommendationsBlock->toHtml();
+    
+                    $cache->save(serialize($productRecommendationsHtml), $cacheKey, array('BLOCK_HTML'), 604800);
+    
+                }
+    
+            }
+    
+        }
+    
+        return $productRecommendationsHtml;
+    }
+    
+    /**
+     * Get dom fragment to append to suggestions ul
+     *
+     * @param string $productRecommendationsHtml
+     * @return DOMDocumentFragment
+     */
+    public function getRecommendationsDom($productRecommendationsHtml)
+    {
+        $layout = Mage::getSingleton('core/layout');
+        $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
+    
+        $recommendationsDom = $productRecommendationsBlock->getRecommendationsDom($productRecommendationsHtml);
+    
+        return $recommendationsDom;
+    }
+    
+    /**
      * @param Mage_CatalogSearch_Model_Query $query
      * @return $collection|bool
      */
-    public function getRecommendations($query = null)
+    protected function _getRecommendations($query = null)
     {
         $storeId = $query->getStoreId();
         
@@ -60,9 +123,7 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
 
             if (!$productIds || count($productIds)==0){
                 
-
                 $collection = $this->_joinSearchResults($collection, $query);
-                $selectStr = (string)$collection->getSelect();
                 
                 $productIds = (array)$this->_getBaseRecommendations($query);
                 
@@ -79,7 +140,6 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
                 
                 $limit = (int)Mage::helper('autocompleterecommendations')->getConfigDefault('max_product_recommendations');
                             
-            
                 $cases = array('CASE e.entity_id');
                 
                 foreach($productIds as $i => $productId) {
@@ -92,7 +152,6 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
             
                 $collection->getSelect()->order(new Zend_Db_Expr($casesStr));
                 $collection->setPageSize($limit);
-                $select = (string)$collection->getSelect();
                                             
                 return $collection;
                 
@@ -106,102 +165,20 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
     
     protected function _joinSearchResults($collection, $query)
     {
-        $storeId = (int)$query->getStoreId();
+        $engine = Mage::helper('autocompleterecommendations')->getEngine();
+             
+        $resultCollection = $engine->getResultCollection();
+        $resultCollection->addSearchFilter($query->getQueryText());
         
-        if (Mage::getStoreConfig('catalog/search/engine', $storeId) == 'enterprise_search/engine'){
-        
-            $engine = Mage::helper('catalogsearch')->getEngine();
-        
-            $resultCollection = $engine->getResultCollection();
-            $resultCollection->addSearchFilter($query->getQueryText());
-        
+        if ($resultCollection->getSize()>0){
+            
             $entityIds = $resultCollection->load()->getAllIds();
-        
             $collection->addAttributeToFilter('entity_id', array('in' => $entityIds));
-        
-        } else {
-            
-            $where = $collection->getConnection()->quoteInto('fulltext.store_id= ?', $storeId);
-            $where .= ' AND '.$collection->getConnection()->quoteInto('fulltext.data_index LIKE ?', "%{$query->getQueryText()}%");
-        
-            $collection->joinTable(
-                    array('fulltext' => $collection->getTable('catalogsearch/fulltext')),
-                    'product_id=entity_id',
-                    array('product_id' => 'product_id'),
-                    $where,
-                    'inner'
-            );
-                        
-            $select = (string)$collection->getSelect();
-            
-        }       
+        }
 
         return $collection;
     }
-    
-    /**
-     * Get recommendations for query
-     * 
-     * @param Mage_CatalogSearch_Model_Query $query
-     * @return string|boolean
-     */
-    public function getProductRecommendationsHtml($query = null)
-    {
-        if (!$query){
-            $query = Mage::helper('autocompleterecommendations')->getQuery();
-        }
         
-        $productRecommendationsHtml = false;
-        
-        if ($query->getQueryText()){
-            
-            $storeId = $query->getStoreId();
-            $cacheKey = $storeId.$query->getQueryText().$query->getNumResults();
-            $cache = Mage::app()->getCache();
-            $productRecommendationsHtml = $cache->load($cacheKey);
-            $productRecommendationsHtml = unserialize($productRecommendationsHtml);
-            
-            if (!$productRecommendationsHtml){
-            
-                $productRecommendations = $this->getRecommendations($query);
-            
-                if ($productRecommendations && $productRecommendations->getSize()>0){
-            
-                    $layout = Mage::getSingleton('core/layout');
-                    $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
-            
-                    $productRecommendationsBlock->setType('product');
-                    $productRecommendationsBlock->setRecommendations($productRecommendations);
-            
-                    $productRecommendationsHtml = $productRecommendationsBlock->toHtml();
-            
-                    $cache->save(serialize($productRecommendationsHtml), $cacheKey, array('BLOCK_HTML'), 604800);
-            
-                }
-            
-            }
-            
-        }
-
-        return $productRecommendationsHtml;
-    }
-    
-    /**
-     * Get dom fragment to append to suggestions ul
-     * 
-     * @param string $productRecommendationsHtml
-     * @return DOMDocumentFragment
-     */
-    public function getRecommendationsDom($productRecommendationsHtml)
-    {
-        $layout = Mage::getSingleton('core/layout');
-        $productRecommendationsBlock = $layout->createBlock('aydus_autocompleterecommendations/recommendation');
-        
-        $recommendationsDom = $productRecommendationsBlock->getRecommendationsDom($productRecommendationsHtml);
-        
-        return $recommendationsDom;
-    }
-    
     /**
      * 
      * @param Mage_CatalogSearch_Model_Query $query
@@ -266,8 +243,6 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
             
             $collection->setDateRange($from, $to);
             
-            $select = (string)$collection->getSelect();      
-
             if ($collection->getSize()){
             
                 $productIds = $collection->getColumnValues('entity_id');

@@ -18,25 +18,43 @@ class Aydus_AutoCompleteRecommendations_Model_Cron
      */
     public function generateRecommendations($schedule)
     {
-        Mage::getDesign()->setArea('frontend');//recommendations to be cached are frontend
-        
-        $queries = Mage::getModel('catalogsearch/query')->getCollection();
-        $select = (string)$queries->getSelect();
+        $stores = Mage::getModel('core/store')->getCollection();
+        Mage::getDesign()->setArea('frontend');
         $model = Mage::getSingleton('aydus_autocompleterecommendations/recommendation');
-        
-        $numGenerated = 0;
-        
-        foreach ($queries as $query){
-            
-            if ($query->getNumResults()>0 && $model->getProductRecommendationsHtml($query)){
-                
-                $numGenerated++;
-            }
-        }
-        
         $message = Mage::helper('autocompleterecommendations')->__('Recommendations generated for number of queries:');
         
-        return $message . ' ' . $numGenerated;
+        foreach ($stores as $store){
+            
+            $storeId = $store->getId();
+            
+            if ($storeId){
+                
+                if (Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/cron', $storeId)){
+                    $queries = Mage::getModel('catalogsearch/query')->getCollection();
+                    $queries->addFieldToFilter('store_id', $storeId);
+                    
+                    $numGenerated = 0;
+                    
+                    foreach ($queries as $query){
+                    
+                        if ($query->getNumResults()>0 && $model->getProductRecommendationsHtml($query)){
+                    
+                            $numGenerated++;
+                        }
+                    }
+                    
+                    $message .= ' Store '.$storeId.':' . $numGenerated.'.';    
+                                    
+                } else {
+                    
+                    $message .= ' Store '.$storeId.': disabled.';
+                }
+
+            }           
+            
+        }
+        
+        return $message;
     }
     
 }

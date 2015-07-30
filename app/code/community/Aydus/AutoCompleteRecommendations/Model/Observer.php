@@ -28,6 +28,21 @@ class Aydus_AutoCompleteRecommendations_Model_Observer
                     
             if ($html){
                 $html = $this->_appendTopRecommendations($html);
+            } else {
+                
+                if (Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/solr', $storeId)){
+                    
+                    $layout = Mage::getSingleton('core/layout');
+                    $suggestionsBlock = $layout->createBlock('aydus_autocompleterecommendations/suggestion');
+                    
+                    $html = $suggestionsBlock->toHtml();
+                    
+                    if ($html){
+                        $html = $this->_appendTopRecommendations($html);
+                    }
+                    
+                }
+                
             }
         
             $response->setBody($html);
@@ -73,6 +88,8 @@ class Aydus_AutoCompleteRecommendations_Model_Observer
     }
     
     /**
+     * Save admin selected recommendations
+     * 
      * @see catalogsearch_query_save_after
      * @param Varien_Event_Observer $observer
      */    
