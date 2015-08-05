@@ -11,7 +11,7 @@
 <config>
     <modules>
         <Aydus_AutoCompleteRecommendations>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
         </Aydus_AutoCompleteRecommendations>
     </modules>
     <phpunit>
@@ -61,6 +61,14 @@
                     </aydus_autocompleterecommendations>
                 </observers>
     		</controller_action_postdispatch_catalogsearch_ajax_suggest>
+    		<controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest>
+                <observers>
+                    <aydus_autocompleterecommendations>
+                        <class>aydus_autocompleterecommendations/observer</class>
+                        <method>appendTopRecommendation</method>
+                    </aydus_autocompleterecommendations>
+                </observers>
+    		</controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest> 		
     	</events>
     </frontend>
     <crontab>

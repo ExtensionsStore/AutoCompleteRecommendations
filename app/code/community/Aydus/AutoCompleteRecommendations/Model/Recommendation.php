@@ -129,31 +129,35 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
                 
             } 
             
-            $collection->addAttributeToFilter('entity_id', array('in', $productIds));
-            $selectStr = (string)$collection->getSelect();
-            
-            if ($collection->getSize()>0){
+            if (is_array($productIds) && count($productIds)>0){
+                
+                $collection->addAttributeToFilter('entity_id', array('in', $productIds));
+                $selectStr = (string)$collection->getSelect();
+                
+                if ($collection->getSize()>0){
                     
-                $collection->addAttributeToSelect('*');
-                $collection->addUrlRewrite();
-                $collection->addFinalPrice();
-                
-                $limit = (int)Mage::helper('autocompleterecommendations')->getConfigDefault('max_product_recommendations');
-                            
-                $cases = array('CASE e.entity_id');
-                
-                foreach($productIds as $i => $productId) {
-                    $cases[] = 'WHEN '.$productId.' THEN '.$i;
+                    $collection->addAttributeToSelect('*');
+                    $collection->addUrlRewrite();
+                    $collection->addFinalPrice();
+                    
+                    $limit = (int)Mage::helper('autocompleterecommendations')->getConfigDefault('max_product_recommendations');
+                    
+                    $cases = array('CASE e.entity_id');
+                    
+                    foreach($productIds as $i => $productId) {
+                        $cases[] = 'WHEN '.$productId.' THEN '.$i;
+                    }
+                    
+                    $cases[] = 'END';
+                    
+                    $casesStr = implode(' ', $cases);
+                    
+                    $collection->getSelect()->order(new Zend_Db_Expr($casesStr));
+                    $collection->setPageSize($limit);
+                    
+                    return $collection;
+                    
                 }
-                
-                $cases[] = 'END';
-                
-                $casesStr = implode(' ', $cases);
-            
-                $collection->getSelect()->order(new Zend_Db_Expr($casesStr));
-                $collection->setPageSize($limit);
-                                            
-                return $collection;
                 
             }
             
@@ -165,17 +169,45 @@ class Aydus_AutoCompleteRecommendations_Model_Recommendation extends Mage_Core_M
     
     protected function _joinSearchResults($collection, $query)
     {
+        $entityIds = array();
         $engine = Mage::helper('autocompleterecommendations')->getEngine();
-             
-        $resultCollection = $engine->getResultCollection();
-        $resultCollection->addSearchFilter($query->getQueryText());
         
-        if ($resultCollection->getSize()>0){
+        if (get_class($engine) == 'JeroenVermeulen_Solarium_Model_Engine'){
             
-            $entityIds = $resultCollection->load()->getAllIds();
+            $searchResult = Mage::registry('solarium_search_result');
+            
+            if ($searchResult){
+                
+                $resultProducts = $searchResult->getResultProducts();
+                $entityIds = $searchResult->getResultProductIds();
+                
+            } else {
+                
+                $searchResult = $engine->search( $query->getStoreId(),
+                        $query->getQueryText(),
+                        $engine::SEARCH_TYPE_STRING_COMPLETION,
+                        null,
+                        $engine->getConf('results/autocomplete_suggestions'));
+                $entityIds = $searchResult->getResultProductIds();
+            }
+            
+            
+        } else {
+            
+            $resultCollection = $engine->getResultCollection();
+            $resultCollection->addSearchFilter($query->getQueryText());
+            
+            if ($resultCollection->getSize()>0){
+            
+                $entityIds = $resultCollection->load()->getAllIds();
+            }
+        }
+        
+        if (is_array($entityIds) && count($entityIds)>0){
+            
             $collection->addAttributeToFilter('entity_id', array('in' => $entityIds));
         }
-
+        
         return $collection;
     }
         

@@ -64,6 +64,10 @@ class Aydus_AutoCompleteRecommendations_Helper_Data extends Mage_Core_Helper_Abs
         
             $engine = Mage::helper('catalogsearch')->getEngine();
         
+        } else if (Mage::getStoreConfig('jeroenvermeulen_solarium/general/enabled', $storeId)) {
+        
+            $engine = Mage::getSingleton('jeroenvermeulen_solarium/engine');
+        
         } else if (Mage::getStoreConfig('catalog/aydus_autocompleterecommendations/solr', $storeId)) {
         
             $engine = Mage::getResourceSingleton('aydus_autocompleterecommendations/solrengine');
