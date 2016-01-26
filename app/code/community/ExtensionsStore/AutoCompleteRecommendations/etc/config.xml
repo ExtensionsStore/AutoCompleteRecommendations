@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * ExtensionsStore_AutoCompleteRecommendations module config
+ *
+ * @category   ExtensionsStore
+ * @package    ExtensionsStore_AutoCompleteRecommendations
+ * @author     Extensions Store <admin@extensions-store.com>
+ */
+-->
+<config>
+    <modules>
+        <ExtensionsStore_AutoCompleteRecommendations>
+            <version>0.9.6</version>
+        </ExtensionsStore_AutoCompleteRecommendations>
+    </modules>
+    <phpunit>
+        <suite>
+            <modules>
+                <ExtensionsStore_AutoCompleteRecommendations />
+            </modules>
+        </suite>
+    </phpunit>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <recommendation before="Mage_Adminhtml">ExtensionsStore_AutoCompleteRecommendations_Adminhtml</recommendation>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>    
+    <adminhtml>
+        <layout>
+            <updates>
+                <autocompleterecommendations>
+                    <file>extensions_store/autocompleterecommendations.xml</file>
+                </autocompleterecommendations>
+            </updates>
+        </layout>
+    	<events>
+    		<catalogsearch_query_save_after>
+                <observers>
+                    <autocompleterecommendations>
+                        <class>autocompleterecommendations/observer</class>
+                        <method>saveRecommendations</method>
+                    </autocompleterecommendations>
+                </observers>    		
+    		</catalogsearch_query_save_after>
+    	</events>
+    </adminhtml>    
+    <frontend>
+    	<events>
+    		<controller_action_postdispatch_catalogsearch_ajax_suggest>
+                <observers>
+                    <autocompleterecommendations>
+                        <class>ExtensionsStore_AutoCompleteRecommendations/observer</class>
+                        <method>appendTopRecommendation</method>
+                    </autocompleterecommendations>
+                </observers>
+    		</controller_action_postdispatch_catalogsearch_ajax_suggest>
+    		<controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest>
+                <observers>
+                    <autocompleterecommendations>
+                        <class>ExtensionsStore_AutoCompleteRecommendations/observer</class>
+                        <method>appendTopRecommendation</method>
+                    </autocompleterecommendations>
+                </observers>
+    		</controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest> 		
+    	</events>
+    </frontend>
+    <crontab>
+        <jobs>
+            <autocompleterecommendations_generaterecommendations>
+                <schedule>
+                    <cron_expr>0 1 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>ExtensionsStore_AutoCompleteRecommendations/cron::generateRecommendations</model>
+                </run>
+            </autocompleterecommendations_generaterecommendations>
+        </jobs>
+    </crontab>
+    <global>
+        <blocks>
+            <autocompleterecommendations>
+                <class>ExtensionsStore_AutoCompleteRecommendations_Block</class>
+            </autocompleterecommendations>
+        </blocks>
+        <helpers>
+            <autocompleterecommendations>
+                <class>ExtensionsStore_AutoCompleteRecommendations_Helper</class>
+            </autocompleterecommendations>
+        </helpers>
+        <models>
+            <autocompleterecommendations>
+                <class>ExtensionsStore_AutoCompleteRecommendations_Model</class>
+                <resourceModel>autocompleterecommendations_resource</resourceModel>
+            </autocompleterecommendations>
+            <autocompleterecommendations_resource>
+                <class>ExtensionsStore_AutoCompleteRecommendations_Model_Resource</class>
+                <entities>
+                    <recommendation>
+                        <table>extensions_store_autocompleterecommendations_recommendation</table>
+                    </recommendation>
+                </entities>
+            </autocompleterecommendations_resource>            
+        </models>
+        <resources>
+            <extensions_store_autocompleterecommendations_setup>
+                <setup>
+                    <module>ExtensionsStore_AutoCompleteRecommendations</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </extensions_store_autocompleterecommendations_setup>        
+        </resources>  
+    </global> 
+    <default>
+    	<catalog>
+    		<autocompleterecommendations>
+	    		<enabled>1</enabled>
+	    		<label_product_recommendations>Recommended Products</label_product_recommendations>
+    			<max_product_recommendations>5</max_product_recommendations>
+    			<recommendation_base>sold</recommendation_base>
+    			<cron>0</cron>
+    			<solr>0</solr>
+    			<solr_server_hostname>127.0.0.1</solr_server_hostname>
+    			<solr_server_port>8983</solr_server_port>
+    			<solr_server_path>solr</solr_server_path>
+    		</autocompleterecommendations>
+    	</catalog>
+    </default> 
+</config>

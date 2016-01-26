@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * ExtensionsStore_AutoCompleteRecommendations search terms recommendations
+ *
+ * @category   ExtensionsStore
+ * @package    ExtensionsStore_AutoCompleteRecommendations
+ * @author     Extensions Store <admin@extensions-store.com>
+ */
+-->
+<layout>
+    <adminhtml_catalog_search_edit>
+        <reference name="content">
+            <block type="autocompleterecommendations/adminhtml_recommendation_edit" name="recommendation_grid_edit" after="related_grid_edit">
+                <reference name="recommendation_grid_edit">
+                   <block type="autocompleterecommendations/adminhtml_recommendation_grid" name="recommendation.edit.grid"/>
+                </reference>
+            </block>
+            <block type="adminhtml/widget_grid_serializer" name="recommendation_grid_serializer">
+                <reference name="recommendation_grid_serializer">
+                    <action method="initSerializerBlock">
+                        <grid_block_name>recommendation.edit.grid</grid_block_name>
+                        <data_callback>getSelectedRecommendations</data_callback>
+                        <hidden_input_name>grid_selected_products</hidden_input_name>
+                        <reload_param_name>grid_selected_products</reload_param_name>
+                    </action>
+                    <action method="setFormId"><value>edit_form</value></action>
+                    <action method="addColumnInputName">
+                        <input_name>position</input_name>
+                    </action>
+                </reference>
+            </block>
+        </reference>
+    </adminhtml_catalog_search_edit>  
+    <adminhtml_recommendation_recommendationgrid>
+        <remove name="root" />
+        <block type="autocompleterecommendations/adminhtml_recommendation_grid" name="recommendationGrid" output="toHtml" />
+    </adminhtml_recommendation_recommendationgrid>
+</layout>

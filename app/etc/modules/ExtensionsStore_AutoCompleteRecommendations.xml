@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- 
+/**
+ * ExtensionsStore_AutoCompleteRecommendations module
+ *
+ * @category   ExtensionsStore
+ * @package    ExtensionsStore_AutoCompleteRecommendations
+ * @author     Extensions Store <admin@extensions-store.com>
+ */
+-->
+<config>
+    <modules>
+        <ExtensionsStore_AutoCompleteRecommendations>
+             <active>true</active>
+             <codePool>community</codePool>
+        </ExtensionsStore_AutoCompleteRecommendations>
+    </modules>
+</config>
