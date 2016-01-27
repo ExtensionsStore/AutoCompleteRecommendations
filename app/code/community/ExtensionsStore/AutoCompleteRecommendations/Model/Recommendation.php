@@ -172,35 +172,12 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Recommendation extends M
         $entityIds = array();
         $engine = Mage::helper('autocompleterecommendations')->getEngine();
         
-        if (get_class($engine) == 'JeroenVermeulen_Solarium_Model_Engine'){
+        $resultCollection = $engine->getResultCollection();
+        $resultCollection->addSearchFilter($query->getQueryText());
             
-            $searchResult = Mage::registry('solarium_search_result');
+        if ($resultCollection->getSize()>0){
             
-            if ($searchResult){
-                
-                $resultProducts = $searchResult->getResultProducts();
-                $entityIds = $searchResult->getResultProductIds();
-                
-            } else {
-                
-                $searchResult = $engine->search( $query->getStoreId(),
-                        $query->getQueryText(),
-                        $engine::SEARCH_TYPE_STRING_COMPLETION,
-                        null,
-                        $engine->getConf('results/autocomplete_suggestions'));
-                $entityIds = $searchResult->getResultProductIds();
-            }
-            
-            
-        } else {
-            
-            $resultCollection = $engine->getResultCollection();
-            $resultCollection->addSearchFilter($query->getQueryText());
-            
-            if ($resultCollection->getSize()>0){
-            
-                $entityIds = $resultCollection->load()->getAllIds();
-            }
+            $entityIds = $resultCollection->load()->getAllIds();
         }
         
         if (is_array($entityIds) && count($entityIds)>0){

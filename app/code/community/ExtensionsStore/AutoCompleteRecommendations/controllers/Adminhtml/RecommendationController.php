@@ -37,8 +37,10 @@ class ExtensionsStore_AutoCompleteRecommendations_Adminhtml_RecommendationContro
         Mage::register('current_catalog_search', $model);
 
         $this->loadLayout();
-        $this->getLayout()->getBlock('recommendation.edit.grid')
-        ->setGridSelectedProducts($this->getRequest()->getPost('grid_selected_products', null));
+        $grid = $this->getLayout()->getBlock('recommendation.edit.grid');
+        if ($grid){
+        	$grid->setGridSelectedProducts($this->getRequest()->getPost('grid_selected_products', null));
+        }
         
         $this->renderLayout();
         

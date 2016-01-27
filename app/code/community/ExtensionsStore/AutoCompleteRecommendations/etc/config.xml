@@ -56,19 +56,11 @@
     		<controller_action_postdispatch_catalogsearch_ajax_suggest>
                 <observers>
                     <autocompleterecommendations>
-                        <class>ExtensionsStore_AutoCompleteRecommendations/observer</class>
+                        <class>autocompleterecommendations/observer</class>
                         <method>appendTopRecommendation</method>
                     </autocompleterecommendations>
                 </observers>
     		</controller_action_postdispatch_catalogsearch_ajax_suggest>
-    		<controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest>
-                <observers>
-                    <autocompleterecommendations>
-                        <class>ExtensionsStore_AutoCompleteRecommendations/observer</class>
-                        <method>appendTopRecommendation</method>
-                    </autocompleterecommendations>
-                </observers>
-    		</controller_action_postdispatch_jeroenvermeulen_solarium_ajax_suggest> 		
     	</events>
     </frontend>
     <crontab>
@@ -78,7 +70,7 @@
                     <cron_expr>0 1 * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>ExtensionsStore_AutoCompleteRecommendations/cron::generateRecommendations</model>
+                    <model>autocompleterecommendations/cron::generateRecommendations</model>
                 </run>
             </autocompleterecommendations_generaterecommendations>
         </jobs>

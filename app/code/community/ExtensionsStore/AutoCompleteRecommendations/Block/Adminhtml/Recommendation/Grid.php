@@ -34,7 +34,12 @@ class ExtensionsStore_AutoCompleteRecommendations_Block_Adminhtml_Recommendation
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->addAttributeToSelect(array('entity_id','name','sku','status','visibility','price'));
         $collection->addAttributeToFilter('status',Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
-        $collection->addAttributeToFilter('visibility',Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH);
+        $visibility = array('in'=>array(
+        		Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG, 
+        		Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_SEARCH, 
+        		Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH
+        ));
+        $collection->addAttributeToFilter('visibility',$visibility);
         
         return $collection;
     }

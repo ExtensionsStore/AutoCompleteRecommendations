@@ -34,6 +34,6 @@
     </adminhtml_catalog_search_edit>  
     <adminhtml_recommendation_recommendationgrid>
         <remove name="root" />
-        <block type="autocompleterecommendations/adminhtml_recommendation_grid" name="recommendationGrid" output="toHtml" />
+        <block type="autocompleterecommendations/adminhtml_recommendation_grid" name="recommendation.edit.grid" output="toHtml" />
     </adminhtml_recommendation_recommendationgrid>
 </layout>

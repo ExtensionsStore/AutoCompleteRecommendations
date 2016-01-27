@@ -14,7 +14,7 @@ class ExtensionsStore_AutoCompleteRecommendations_Helper_Data extends Mage_Core_
     
     public function getConfigDefault($defaultNodeText)
     {
-        $configFile = Mage::getConfig()->getModuleDir('etc', 'autocompleterecommendations').DS.'config.xml';
+        $configFile = Mage::getConfig()->getModuleDir('etc', 'ExtensionsStore_AutoCompleteRecommendations').DS.'config.xml';
         $string = file_get_contents($configFile);
         $xml = simplexml_load_string($string, 'Varien_Simplexml_Element');
         
@@ -63,10 +63,6 @@ class ExtensionsStore_AutoCompleteRecommendations_Helper_Data extends Mage_Core_
         if (Mage::getStoreConfig('catalog/search/engine', $storeId) == 'enterprise_search/engine'){
         
             $engine = Mage::helper('catalogsearch')->getEngine();
-        
-        } else if (Mage::getStoreConfig('jeroenvermeulen_solarium/general/enabled', $storeId)) {
-        
-            $engine = Mage::getSingleton('jeroenvermeulen_solarium/engine');
         
         } else if (Mage::getStoreConfig('catalog/autocompleterecommendations/solr', $storeId)) {
         
