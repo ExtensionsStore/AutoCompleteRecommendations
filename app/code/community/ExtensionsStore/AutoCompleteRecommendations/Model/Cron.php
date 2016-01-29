@@ -12,7 +12,7 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Cron
 {
 
     /**
-     * Generate cached recommendations for each query
+     * Generate recommendations for each query
      * 
      * @param Mage_Cron_Model_Schedule $schedule
      */
@@ -26,21 +26,31 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Cron
         foreach ($stores as $store){
             
             $storeId = $store->getId();
+            $enabled = Mage::getStoreConfig('catalog/autocompleterecommendations/enabled', $storeId);
             
-            if ($storeId){
+            if ($enabled){
+            	
+            	$cron = Mage::getStoreConfig('catalog/autocompleterecommendations/cron', $storeId);
                 
-                if (Mage::getStoreConfig('catalog/autocompleterecommendations/cron', $storeId)){
+                if ($cron){
                     $queries = Mage::getModel('catalogsearch/query')->getCollection();
                     $queries->addFieldToFilter('store_id', $storeId);
+                    $queries->addFieldToFilter('num_results', array('gt'=>10));
+                    $queries->addFieldToFilter('popularity', array('gt'=>100));
                     
                     $numGenerated = 0;
+                    $size = $queries->getSize();
                     
-                    foreach ($queries as $query){
-                    
-                        if ($query->getNumResults()>0 && $model->getProductRecommendationsHtml($query)){
-                    
-                            $numGenerated++;
-                        }
+                    if ($size){
+                    	foreach ($queries as $query){
+                    		
+                    		$queryText = $query->getQueryText();
+                    	
+                    		if ($model->getProductRecommendationsHtml($query)){
+                    			                    	
+                    			$numGenerated++;
+                    		}
+                    	}                    	
                     }
                     
                     $message .= ' Store '.$storeId.':' . $numGenerated.'.';    

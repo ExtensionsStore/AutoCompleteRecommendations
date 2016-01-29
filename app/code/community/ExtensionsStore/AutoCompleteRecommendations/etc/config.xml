@@ -80,6 +80,11 @@
             <autocompleterecommendations>
                 <class>ExtensionsStore_AutoCompleteRecommendations_Block</class>
             </autocompleterecommendations>
+            <catalogsearch>
+            	<rewrite>
+            		<autocomplete>ExtensionsStore_AutoCompleteRecommendations_Block_Autocomplete</autocomplete>
+            	</rewrite>
+            </catalogsearch>
         </blocks>
         <helpers>
             <autocompleterecommendations>
@@ -119,6 +124,7 @@
     			<max_product_recommendations>5</max_product_recommendations>
     			<recommendation_base>sold</recommendation_base>
     			<cron>0</cron>
+    			<suggestions_limit>5</suggestions_limit>
     			<solr>0</solr>
     			<solr_server_hostname>127.0.0.1</solr_server_hostname>
     			<solr_server_port>8983</solr_server_port>

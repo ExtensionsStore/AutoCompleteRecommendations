@@ -27,12 +27,24 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Suggestion extends Mage_
      */
     public function getSuggestCollection($query)
     {
+    	$helper = Mage::helper('autocompleterecommendations');
+    	
         if (!$query){
             
-            $query = Mage::helper('autocompleterecommendations')->getQuery();
+            $query = $helper->getQuery();
         }
         
         $suggestCollection = $this->getResource()->getSuggestCollection($query);
+        $storeId = Mage::app()->getStore()->getId();
+        $suggestionsLimit = Mage::getStoreConfig('catalog/autocompleterecommendations/suggestions_limit', $storeId);
+        
+        if (!$suggestionsLimit){
+        	$suggestionsLimit = $helper->getConfigDefault('suggestions_limit');
+        }
+        
+        if ($suggestionsLimit){
+        	$suggestCollection->setPageSize($suggestionsLimit);
+        }
         
         return $suggestCollection;
     }

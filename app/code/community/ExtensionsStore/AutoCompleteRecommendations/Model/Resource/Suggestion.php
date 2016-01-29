@@ -52,9 +52,7 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Resource_Suggestion exte
 	                Mage::log($e->getMessage(), null, 'extensions_store_autocompleterecommendations.log');
 	            }
 	             
-	        } else {
-	            
-	        }
+	        } 
 	        	        
 	    }
 	

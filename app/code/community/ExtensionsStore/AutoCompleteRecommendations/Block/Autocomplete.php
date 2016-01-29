@@ -8,7 +8,7 @@
  * @author     Extensions Store <admin@extensions-store.com>
  */
 
-class ExtensionsStore_AutoCompleteRecommendations_Block_Suggestion extends Mage_CatalogSearch_Block_Autocomplete
+class ExtensionsStore_AutoCompleteRecommendations_Block_Autocomplete extends Mage_CatalogSearch_Block_Autocomplete
 {
 
     public function getSuggestData()
