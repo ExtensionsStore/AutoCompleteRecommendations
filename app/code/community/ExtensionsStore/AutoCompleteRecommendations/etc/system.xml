@@ -85,30 +85,59 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[If yes, cron will run at 1 a.m. generating recommendations for each search term.]]></comment>
-                        </cron>   
-                        <suggestions_limit translate="label comment">
-                            <label>Limit Autocomplete Suggestions</label>
+                        </cron>  
+                        <num_results translate="label comment">
+                            <label>Generate Recommendations Number Results</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>80</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Limit Autocomplete Suggestions (default is unlimited).]]></comment>
-                        </suggestions_limit>  
-                        <solr translate="label comment">
-                            <label>Solr</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <comment><![CDATA[Generate recommendations for search terms with at least number results.]]></comment>
+                        </num_results>  
+                        <popularity translate="label comment">
+                            <label>Generate Recommendations Popularity</label>
+                            <frontend_type>text</frontend_type>
                             <sort_order>90</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[If yes and using Magento Community, fill out fields below. If yes and using Magento Enterprise, leave fields blank below and complete fields in Catalog Search tab above.]]></comment>
-                        </solr>                           
+                            <comment><![CDATA[Generate recommendations for search terms with at least number of searches.]]></comment>
+                        </popularity>                                                   
+                        <solr translate="label comment">
+                            <label>Solr</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[If yes and using Magento Community, fill out connection fields below. If yes and using Magento Enterprise, leave fields blank below and complete fields in Catalog Search tab above.]]></comment>
+                        </solr>    
+                        <!-- 
+                        <solr_suggestions translate="label comment">
+                            <label>Solr Autocomplete Suggestions</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Use Solr for autocomplete suggestions instead of MySQL. Requires that your solrconfig.xml has the Search Component /suggest .]]></comment>
+                        </solr_suggestions>                   -->                               
+                        <suggestions_limit translate="label comment">
+                            <label>Limit Autocomplete Suggestions</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Limit Autocomplete Suggestions (default is unlimited). Will be used even if you do not use Solr]]></comment>
+                        </suggestions_limit>                          
                         <solr_server_hostname translate="label">
                             <label>Solr Server Hostname</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>100</sort_order>
+                            <sort_order>130</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -116,7 +145,7 @@
                         <solr_server_port translate="label">
                             <label>Solr Server Port</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>110</sort_order>
+                            <sort_order>140</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -124,7 +153,7 @@
                         <solr_server_username translate="label">
                             <label>Solr Server Username</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>120</sort_order>
+                            <sort_order>150</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -132,7 +161,7 @@
                         <solr_server_password translate="label">
                             <label>Solr Server Password</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>130</sort_order>
+                            <sort_order>160</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -140,7 +169,7 @@
                         <solr_server_timeout translate="label">
                             <label>Solr Server Timeout</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>140</sort_order>
+                            <sort_order>170</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -149,7 +178,7 @@
                             <label>Solr Server Path</label>
                             <frontend_type>text</frontend_type>
                             <comment>Without starting and trailing slashes.</comment>
-                            <sort_order>150</sort_order>
+                            <sort_order>180</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>

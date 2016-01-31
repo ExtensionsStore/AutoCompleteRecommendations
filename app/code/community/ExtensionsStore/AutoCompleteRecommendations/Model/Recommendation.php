@@ -174,9 +174,16 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Recommendation extends M
 		$entityIds = array ();
 		$engine = Mage::helper ( 'autocompleterecommendations' )->getEngine ();
 		
-		//@todo doesn't work with mysql
 		$resultCollection = $engine->getResultCollection ();
-		$resultCollection->addSearchFilter ( $query->getQueryText () );
+		
+		$size = $resultCollection->getSize();
+		
+		//@todo doesn't work with mysql
+		if (get_class($engine) == 'Mage_CatalogSearch_Model_Resource_Fulltext_Engine' && $query->getId()){
+			$resultCollection->addSearchFilter ( $query->getQueryText () );
+		} else {
+			$resultCollection->addSearchFilter ( $query->getQueryText () );
+		}
 		
 		if ($resultCollection->getSize () > 0) {
 			

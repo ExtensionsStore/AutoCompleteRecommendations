@@ -124,6 +124,8 @@
     			<max_product_recommendations>5</max_product_recommendations>
     			<recommendation_base>sold</recommendation_base>
     			<cron>0</cron>
+    			<num_results>3</num_results>
+    			<popularity>100</popularity>
     			<suggestions_limit>5</suggestions_limit>
     			<solr>0</solr>
     			<solr_server_hostname>127.0.0.1</solr_server_hostname>

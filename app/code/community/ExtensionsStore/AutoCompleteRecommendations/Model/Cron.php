@@ -21,7 +21,8 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Cron
         $stores = Mage::getModel('core/store')->getCollection();
         Mage::getDesign()->setArea('frontend');
         $model = Mage::getSingleton('autocompleterecommendations/recommendation');
-        $message = Mage::helper('autocompleterecommendations')->__('Recommendations generated for number of queries:');
+        $helper = Mage::helper('autocompleterecommendations');
+        $message = $helper->__('Recommendations generated for number of queries:');
         
         foreach ($stores as $store){
             
@@ -35,8 +36,12 @@ class ExtensionsStore_AutoCompleteRecommendations_Model_Cron
                 if ($cron){
                     $queries = Mage::getModel('catalogsearch/query')->getCollection();
                     $queries->addFieldToFilter('store_id', $storeId);
-                    $queries->addFieldToFilter('num_results', array('gt'=>10));
-                    $queries->addFieldToFilter('popularity', array('gt'=>100));
+                    $numResults = (int)Mage::getStoreConfig('catalog/autocompleterecommendations/num_results', $storeId);
+                    $numResults = ($numResults) ? $numResults : $helper->getConfigDefault('num_results');
+                    $queries->addFieldToFilter('num_results', array('gte'=>$numResults));
+                    $popularity = (int)Mage::getStoreConfig('catalog/autocompleterecommendations/popularity', $storeId);
+                    $popularity = ($popularity) ? $popularity : $helper->getConfigDefault('popularity');
+                    $queries->addFieldToFilter('popularity', array('gte'=>$popularity));
                     
                     $numGenerated = 0;
                     $size = $queries->getSize();
